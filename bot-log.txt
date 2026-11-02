@@ -1,0 +1,8 @@
+# Bot Log
+
+This file is automatically updated by the GitHub Actions Commit Bot every time the workflow is run.
+
+Each new line below is stamped with the exact UTC time the bot was triggered.
+
+---
+

@@ -1,0 +1,47 @@
+name: 🤖 One-Click Commit Bot
+
+# ─────────────────────────────────────────────
+# Trigger: only the manual "Run workflow" button
+# ─────────────────────────────────────────────
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: "Custom commit message (optional)"
+        required: false
+        default: "🤖 Auto-commit by GitHub Actions bot"
+
+# ─────────────────────────────────────────────
+# Permissions: allow the workflow to push commits
+# ─────────────────────────────────────────────
+permissions:
+  contents: write   # needed to push code back to the repo
+
+jobs:
+  auto-commit:
+    name: Make a commit and push
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out your repository code
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Update the log file with a new timestamped entry
+      - name: 📝 Update bot log file
+        run: |
+          echo "Bot run at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> bot-log.txt
+
+      # 3. Configure git identity so it can author a commit
+      - name: 🔧 Configure Git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 4. Stage, commit, and push the changed file
+      - name: 🚀 Commit and push changes
+        run: |
+          git add bot-log.txt
+          git commit -m "${{ github.event.inputs.commit_message }}"
+          git push
+
