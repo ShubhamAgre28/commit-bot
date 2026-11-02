@@ -1,15 +1,20 @@
 name: 🤖 One-Click Commit Bot
 
 # ─────────────────────────────────────────────
-# Trigger: only the manual "Run workflow" button
+# Triggers: Manual button + Automatic Daily Schedule
 # ─────────────────────────────────────────────
 on:
+  # 1. Manual "Run workflow" button
   workflow_dispatch:
     inputs:
       commit_message:
         description: "Custom commit message (optional)"
         required: false
         default: "🤖 Auto-commit by GitHub Actions bot"
+
+  # 2. Automatic daily run at 10:00 AM IST (04:30 AM UTC)
+  schedule:
+    - cron: '30 4 * * *'
 
 # ─────────────────────────────────────────────
 # Permissions: allow the workflow to push commits
@@ -42,6 +47,9 @@ jobs:
       - name: 🚀 Commit and push changes
         run: |
           git add bot-log.txt
-          git commit -m "${{ github.event.inputs.commit_message }}"
+          MSG="${{ github.event.inputs.commit_message }}"
+          if [ -z "$MSG" ]; then
+            MSG="🤖 Auto-commit by GitHub Actions bot [daily schedule]"
+          fi
+          git commit -m "$MSG"
           git push
-
